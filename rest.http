@@ -1,0 +1,81 @@
+## GET /
+GET http://localhost:8080 HTTP/1.1
+
+### POST /auth/register
+POST http://localhost:8080/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+  	"first_name": "sasa",
+  	"email": "sasa@gmail.com",
+  	"password": "Sasa500!",
+  	"confirm_password": "Sasa500!"
+}
+
+### POST /auth/login
+POST http://localhost:8080/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  	"email": "sasa@gmail.com",
+  	"password": "Sasa500!"
+}
+
+### GET /auth
+GET http://localhost:8080/auth HTTP/1.1
+
+### POST /auth/signout
+POST http://localhost:8080/auth/signout HTTP/1.1
+
+### PATCH /users/:id
+PATCH http://localhost:8080/users/fceef898-9501-4035-ad31-18dcf10c074a HTTP/1.1
+Content-Type: application/json
+
+{
+	"role_id": "c7afa5eb-6c26-4cd5-994c-4045a8edf6b8"
+}
+
+### GET /orders
+GET http://localhost:8080/orders HTTP/1.1
+
+### GET /orders/chart
+GET http://localhost:8080/orders/chart HTTP/1.1
+
+### GET /users
+GET http://localhost:8080/users HTTP/1.1
+
+
+### GET /permissions
+GET http://localhost:8080/permissions
+
+### POST /permissions
+POST http://localhost:8080/permissions HTTP/1.1
+Content-Type: application/json
+
+{
+  	"name": "edit_permissions"
+}
+
+### GET /roles
+GET http://localhost:8080/roles HTTP/1.1
+
+### DELETE /roles/:id
+DELETE http://localhost:8080/roles/6e3a874c-9898-41cf-9b69-05fad8c371c7 HTTP/1.1
+
+### POST /roles
+POST http://localhost:8080/roles HTTP/1.1
+Content-Type: application/json
+
+{
+  	"name": "Viewer",
+	"permissions": ["4bdd1a67-f3f4-4b55-9889-cd9e6e131929"]
+}
+
+### PATCH /roles/:id
+PATCH http://localhost:8080/roles/c7afa5eb-6c26-4cd5-994c-4045a8edf6b8 HTTP/1.1
+Content-Type: application/json
+
+{
+  	"name": "Admin",
+    "permissions": ["71adb295-32d6-4f69-a730-5a665670ec68", "cc8d37b6-431e-44b9-9f9e-de9be1adc51b"]
+}
