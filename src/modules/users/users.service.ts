@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  HttpException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common'
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'entities/user.entity'
 import { PostgresErrorCode } from 'helpers/postgresErrorCode.enum'

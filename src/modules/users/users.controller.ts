@@ -15,6 +15,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { HasPermission } from 'decorators/has-permission.decorator'
 // import { ApiBadRequestResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger'
 import { User } from 'entities/user.entity'
 import { isFileExtensionSafe, removeFile, saveImageToStorage } from 'helpers/imageStorage'
@@ -24,7 +25,6 @@ import { join } from 'path'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UsersService } from './users.service'
-import { HasPermission } from 'decorators/has-permission.decorator'
 
 // @ApiTags('users')
 @Controller('users')
@@ -36,7 +36,7 @@ export class UsersController {
   // @ApiCreatedResponse({ description: 'List all users.' })
   // @ApiBadRequestResponse({ description: 'Error for list of users.' })
   @Get()
-  @HasPermission('users')
+  // @HasPermission('users')
   @HttpCode(HttpStatus.OK) // Status 200
   async findAll(@Query('page') page: number): Promise<PaginatedResult> {
     return this.usersService.paginate(page, ['role'])
