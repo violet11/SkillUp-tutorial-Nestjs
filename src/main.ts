@@ -21,7 +21,7 @@ async function bootstrap() {
   app.use(cookieParser())
 
   // Setup to display files
-  app.use('files', express.static('files'))
+  app.use('/files', express.static('files'))
 
   // Setup Swagger
   const config = new DocumentBuilder()

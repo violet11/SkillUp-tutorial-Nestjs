@@ -14,16 +14,22 @@ import {
 import { Public } from 'decorators/public.decorator'
 import { User } from 'entities/user.entity'
 import { Request, Response } from 'express'
-import { RequestWithUser } from 'interfaces/auth.interface'
+import { JwtType, RequestWithUser } from 'interfaces/auth.interface'
 
 import { AuthService } from './auth.service'
 import { RegisterUserDto } from './dto/register-user.dto'
 import { LocalAuthGuard } from './guards/local-auth.guard'
+import { UtilsService } from 'utils/utils.service'
+import { UsersService } from 'modules/users/users.service'
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private utilsService: UtilsService,
+    private usersService: UsersService,
+  ) {}
 
   @Public()
   @Post('register')
@@ -37,9 +43,9 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Req() req: RequestWithUser, @Res({ passthrough: true }) res: Response): Promise<User> {
-    const access_token = await this.authService.generateJwt(req.user)
+    const access_token = await this.utilsService.generateToken(req.user.id, req.user.email, JwtType.ACCESS_TOKEN)
     res.cookie('access_token', access_token, { httpOnly: true })
-    return req.user
+    return this.usersService.findById(req.user.id, ['role'])
   }
 
   @Get()

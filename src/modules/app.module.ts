@@ -12,6 +12,9 @@ import { PermissionsModule } from './permissions/permissions.module'
 import { ProductsModule } from './products/products.module'
 import { RolesModule } from './roles/roles.module'
 import { UsersModule } from './users/users.module'
+import { JwtAuthGuard } from './auth/guards/jwt.guard'
+import { JwtService } from '@nestjs/jwt'
+import { UtilsModule } from 'utils/utils.module'
 
 @Module({
   imports: [
@@ -27,14 +30,10 @@ import { UsersModule } from './users/users.module'
     PermissionsModule,
     ProductsModule,
     OrdersModule,
+    UtilsModule,
   ],
   controllers: [],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: PermissionsGuard,
-    },
-  ],
+  providers: [JwtService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

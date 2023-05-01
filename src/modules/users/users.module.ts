@@ -4,9 +4,10 @@ import { User } from 'entities/user.entity'
 
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
+import { RolesModule } from 'modules/roles/roles.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])], // To use User Repository inside of user.service
+  imports: [TypeOrmModule.forFeature([User]), RolesModule], // To use User Repository inside of user.service
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

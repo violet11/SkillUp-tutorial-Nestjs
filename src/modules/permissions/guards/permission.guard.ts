@@ -1,33 +1,60 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { Role } from 'entities/role.entity'
-import { User } from 'entities/user.entity'
-import { AuthService } from 'modules/auth/auth.service'
+import { RequestWithUser } from 'interfaces/auth.interface'
 import { RolesService } from 'modules/roles/roles.service'
 import { UsersService } from 'modules/users/users.service'
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(
-    private reflector: Reflector,
-    private authService: AuthService,
-    private usersService: UsersService,
-    private rolesService: RolesService,
-  ) {}
+  constructor(private reflector: Reflector, private userService: UsersService, private roleService: RolesService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const access = this.reflector.get('access', context.getHandler())
+    console.log('test')
+    const request = context.switchToHttp().getRequest() as RequestWithUser
+    const access: string = this.reflector.get('access', context.getHandler())
+
     if (!access) {
       return true
     }
 
-    const request = context.switchToHttp().getRequest()
-    const userId = await this.authService.getUserId(request)
-    const user: User = await this.usersService.findById(userId, ['role'])
-    const role: Role = await this.rolesService.findById(user.role.id, ['permissions'])
-    if (request.method === 'GET') {
-      return role.permissions.some((p) => p.name === `view_${access}` || p.name === `edit_${access}`)
+    const user = await this.userService.findById(request.user.id, ['role'])
+    if (!user.role) {
+      throw new ForbiddenException()
     }
-    return role.permissions.some((p) => p.name === `edit_${access}`)
+    const role = await this.roleService.findById(user.role.id, ['permissions'])
+    /**
+     * EXAMPLE:
+     * Permissions:
+     * view_users
+     * add_users
+     * edit_users
+     * delete_users
+     *
+     * view_roles
+     * add_roles
+     * edit_roles
+     * delete_roles
+     *
+     * view_permissions
+     * add_permissions
+     * edit_permissions
+     * delete_permissions
+     */
+    if (request.method === 'GET') {
+      return role.permissions.some(
+        (p) =>
+          p.name === `view_${access}` ||
+          p.name === `edit_${access}` ||
+          p.name === `add_${access}` ||
+          p.name === `delete_${access}`,
+      )
+    } else if (request.method === 'POST') {
+      return role.permissions.some((p) => p.name === `add_${access}`)
+    } else if (request.method === 'PATCH' || request.method === 'PUT') {
+      return role.permissions.some((p) => p.name === `edit_${access}`)
+    } else if (request.method === 'DELETE') {
+      return role.permissions.some((p) => p.name === `delete_${access}`)
+    }
+    throw new ForbiddenException()
   }
 }

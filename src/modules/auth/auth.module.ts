@@ -7,33 +7,13 @@ import { UsersModule } from 'modules/users/users.module'
 
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { JwtAuthGuard } from './guards/jwt.guard'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
 
 @Module({
-  imports: [
-    UsersModule,
-    PassportModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: `${configService.get('JWT_SECRET_EXPIRES')}s` },
-      }),
-    }),
-  ],
+  imports: [UsersModule, PassportModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard, // This provides us with private routes, we use it in all controllers
-    },
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

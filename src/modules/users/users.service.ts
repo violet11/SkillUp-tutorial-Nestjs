@@ -5,14 +5,16 @@ import { PostgresErrorCode } from 'helpers/postgresErrorCode.enum'
 import Logging from 'library/Logging'
 import { AbstractService } from 'modules/common/abstract.service'
 import { Repository } from 'typeorm'
-import { compareHash, hash } from 'utils/bcrypt'
-
+import { UtilsService } from 'utils/utils.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
 export class UsersService extends AbstractService {
-  constructor(@InjectRepository(User) private readonly usersRepository: Repository<User>) {
+  constructor(
+    @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    private utilsService: UtilsService,
+  ) {
     super(usersRepository) // We add super, because we are extending it to the abstract.service
   }
 
@@ -42,10 +44,10 @@ export class UsersService extends AbstractService {
       if (password !== confirm_password) {
         throw new BadRequestException('Passwords do not match.')
       }
-      if (await compareHash(password, user.password)) {
+      if (await this.utilsService.compareHash(password, user.password)) {
         throw new BadRequestException('New password cannot be the same as your old password.')
       }
-      user.password = await hash(password)
+      user.password = await this.utilsService.hash(password)
     }
     if (role_id) {
       user.role = { ...user.role, id: role_id }

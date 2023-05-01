@@ -4,13 +4,13 @@ import { User } from 'entities/user.entity'
 import { Request } from 'express'
 import Logging from 'library/Logging'
 import { UsersService } from 'modules/users/users.service'
-import { compareHash, hash } from 'utils/bcrypt'
 
 import { RegisterUserDto } from './dto/register-user.dto'
+import { UtilsService } from 'utils/utils.service'
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService, private jwtService: JwtService) {}
+  constructor(private usersService: UsersService, private jwtService: JwtService, private utilsService: UtilsService) {}
 
   async validateUser(email: string, password: string): Promise<User> {
     Logging.info('Validating user...')
@@ -18,7 +18,7 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('Invalid credentials.')
     }
-    if (!(await compareHash(password, user.password))) {
+    if (!(await this.utilsService.compareHash(password, user.password))) {
       throw new BadRequestException('Invalid credentials.')
     }
 
@@ -27,17 +27,13 @@ export class AuthService {
   }
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
-    const hashedPassword: string = await hash(registerUserDto.password)
+    const hashedPassword: string = await this.utilsService.hash(registerUserDto.password)
     const user = await this.usersService.create({
       role_id: null,
       ...registerUserDto,
       password: hashedPassword,
     })
     return user
-  }
-
-  async generateJwt(user: User): Promise<string> {
-    return this.jwtService.signAsync({ sub: user.id, name: user.email })
   }
 
   async user(cookie: string): Promise<User> {

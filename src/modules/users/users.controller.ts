@@ -12,6 +12,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
@@ -25,18 +26,22 @@ import { join } from 'path'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UsersService } from './users.service'
+import { JwtAuthGuard } from 'modules/auth/guards/jwt.guard'
+import { PermissionsGuard } from 'modules/permissions/guards/permission.guard'
 
 @ApiTags('users')
 @Controller('users')
 // This will make sure that exclude from class transformer in user.entity is added inside requests we will be making
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(PermissionsGuard)
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiCreatedResponse({ description: 'List all users.' })
   @ApiBadRequestResponse({ description: 'Error for list of users.' })
-  @Get()
   // @HasPermission('users')
+  @Get()
   @HttpCode(HttpStatus.OK) // Status 200
   async findAll(@Query('page') page: number): Promise<PaginatedResult> {
     return this.usersService.paginate(page, ['role'])
