@@ -6,8 +6,8 @@ POST http://localhost:8080/auth/register HTTP/1.1
 Content-Type: application/json
 
 {
-  	"first_name": "sasa",
-  	"email": "sasa@gmail.com",
+  	"first_name": "s",
+  	"email": "sg@gmail.com",
   	"password": "Sasa500!",
   	"confirm_password": "Sasa500!"
 }
@@ -28,7 +28,7 @@ GET http://localhost:8080/auth HTTP/1.1
 POST http://localhost:8080/auth/signout HTTP/1.1
 
 ### PATCH /users/:id
-PATCH http://localhost:8080/users/fceef898-9501-4035-ad31-18dcf10c074a HTTP/1.1
+PATCH http://localhost:8080/users/fd6021f1-0c61-410b-8e56-7d7009381918 HTTP/1.1
 Content-Type: application/json
 
 {

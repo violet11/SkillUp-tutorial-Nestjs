@@ -75,7 +75,7 @@ export class UtilsService {
         case 'ACCESS_TOKEN':
           token = await this.jwtService.signAsync(payload, {
             secret: this.configService.get('JWT_SECRET'),
-            expiresIn: `${Number(this.configService.get('JWT_SECRET_EXPIRES')) / 1000}s`,
+            expiresIn: this.configService.get('JWT_SECRET_EXPIRES'),
           })
           break
         default:
